@@ -54,10 +54,26 @@ class Graph:
                 for next_vertex in self.get_neighbors(v):
                     s.push(next_vertex)
 
-    def dft_recursive(self, starting_vertex):
+    # init visited arg to None
+    def dft_recursive(self, starting_vertex, visited=None):
         # plan -> call recursive dtf
+        # init visited in args?
         # when does recursion happen? -> when looping through get_neighbors
-        pass
+
+        # base case (first run)
+        # visited default value will be overwritten when recursion executes
+        if visited is None:
+            visited = set()
+
+        if starting_vertex not in visited:
+            # add to visited
+            visited.add(starting_vertex)
+            # debug
+            print(starting_vertex)
+
+            for next_vertex in self.get_neighbors(starting_vertex):
+                # pass in next_vertex and visited set for traversal history
+                self.dft_recursive(next_vertex, visited)
 
     def bfs(self, starting_vertex, destination_vertex):
         q = Queue()
