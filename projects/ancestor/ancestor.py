@@ -1,3 +1,4 @@
+# lazy import queue
 class Queue:
     def __init__(self):
         self.queue = []
@@ -15,9 +16,8 @@ class Queue:
         return len(self.queue)
 
 
+# lazy import graph
 class Graph:
-    """Represent a graph as a dictionary of vertices mapping labels to edges."""
-
     def __init__(self):
         self.vertices = {}
 
@@ -36,31 +36,47 @@ def earliest_ancestor(ancestors, starting_node):
     # Build the graph
     graph = Graph()
     for pair in ancestors:
-        graph.add_vertex(pair[0])
-        graph.add_vertex(pair[1])
-        graph.add_edge(pair[1], pair[0])
+        parent = pair[0]
+        child = pair[1]
+        graph.add_vertex(parent)  # parent
+        graph.add_vertex(child)  # child
+        graph.add_edge(child, parent)  # connection between child -> parent
 
     # Do a BFS storing the path
+    # COULD return just the last node to be visited
+    # EDGE CASE: what if 2 parents at the same level?
+    # EDGE CASE: what if our input is 11? Should return -1
+
     q = Queue()
     q.enqueue([starting_node])
-    max_path_length = 1
+
+    longest_path_length = 1
     earliest_ancestor = -1
+
+    # [6, 3, 1, 10] -> want to return 10
     while q.size() > 0:
         path = q.dequeue()
-        v = path[-1]
-        if (len(path) >= max_path_length and v < earliest_ancestor) or (
-            len(path) > max_path_length
-        ):
-            earliest_ancestor = v
-            max_path_length = len(path)
-            for neighbor in graph.vertices[v]:
-                path_copy = list(path)
-                path_copy.append(neighbor)
-                q.enqueue(path_copy)
+        current_node = path[-1]
+
+        if len(path) == longest_path_length:
+            if current_node < earliest_ancestor:
+                longest_path_length = len(path)
+                earliest_ancestor = current_node
+
+        if len(path) > longest_path_length:
+            longest_path_length = len(path)
+            earliest_ancestor = current_node
+
+        neighbors = graph.vertices[current_node]
+        for ancestor in neighbors:
+            path_copy = list(path)
+            path_copy.append(ancestor)
+            q.enqueue(path_copy)
 
     return earliest_ancestor
 
 
+# test
 print(
     earliest_ancestor(
         [
@@ -78,5 +94,5 @@ print(
         6,
     )
 )
-# -1
+# 10
 
