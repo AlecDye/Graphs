@@ -63,6 +63,7 @@ def earliest_ancestor(ancestors, starting_node):
                 longest_path_length = len(path)
                 earliest_ancestor = current_node
 
+        # if path is longer than current longest path, replace with path
         if len(path) > longest_path_length:
             longest_path_length = len(path)
             earliest_ancestor = current_node
