@@ -39,27 +39,49 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 traversal_path = []
 # tuples or dictionary to store possible directions
-# North can go to East, South, or West (never North, itself)
+# correction: n -> s and s -> n ; w -> e and e -> w
+direction = {"n": "s", "s": "n", "w": "e", "e": "w"}
 
 # need a path storage
+path = []
 # need a "visited" rooms storage
+# "visited_rooms" used in traversal test
+visited_cache = {}
+
+# Create a function to find t he rooms' exits
+# 1. init empty list (local cache)
+# 2. loop through rooms to find exits
+# 3. store exits and ignore collisions
+# note: get_exits() is already a func in room
+def find_all_exits(current_room):
+    exits = []
+    for exit in current_room.get_exits():
+        # create visited for traversal func (different from visted_rooms)
+        if room_graph[current_room.id][1][exit] not in visited:
+            exits.append(exit)
+    return find_all_exits
+
+
+# debug
+# print(find_all_exits())
+
 
 # TRAVERSAL TEST
-visited_rooms = set()
-player.current_room = world.starting_room
-visited_rooms.add(player.current_room)
+# visited_rooms = set()
+# player.current_room = world.starting_room
+# visited_rooms.add(player.current_room)
 
-for move in traversal_path:
-    player.travel(move)
-    visited_rooms.add(player.current_room)
+# for move in traversal_path:
+#     player.travel(move)
+#     visited_rooms.add(player.current_room)
 
-if len(visited_rooms) == len(room_graph):
-    print(
-        f"TESTS PASSED: {len(traversal_path)} moves, {len(visited_rooms)} rooms visited"
-    )
-else:
-    print("TESTS FAILED: INCOMPLETE TRAVERSAL")
-    print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
+# if len(visited_rooms) == len(room_graph):
+#     print(
+#         f"TESTS PASSED: {len(traversal_path)} moves, {len(visited_rooms)} rooms visited"
+#     )
+# else:
+#     print("TESTS FAILED: INCOMPLETE TRAVERSAL")
+#     print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
 
 
 #######
