@@ -1,6 +1,23 @@
 import random
 
-# Todo for wednesday
+
+class Queue:
+    def __init__(self):
+        self.queue = []
+
+    def enqueue(self, value):
+        self.queue.append(value)
+
+    def dequeue(self):
+        if self.size() > 0:
+            return self.queue.pop(0)
+        else:
+            return None
+
+    def size(self):
+        return len(self.queue)
+
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -68,11 +85,16 @@ class SocialGraph:
         random.shuffle(possible_friendships)
 
         # only take as many as we need
-        total_friendships = num_users + avg_friendships // 2
-        random_friendships = possible_friendships[:total_friendships]
+        total_friendships = num_users + avg_friendships
+        number_of_friend_pairs_needed = total_friendships // 2
+        random_friendships = possible_friendships[:number_of_friend_pairs_needed]
+
         # add to friendships
         for friendship in random_friendships:
             self.add_friendship(friendship[0], friendship[1])
+
+    def get_friendships(self, user_id):
+        return self.friendships[user_id]
 
     def get_all_social_paths(self, user_id):
         """
@@ -84,7 +106,28 @@ class SocialGraph:
         The key is the friend's ID and the value is the path.
         """
         visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
+
+        # use bfs
+        q = Queue()
+
+        path = [user_id]
+        q.enqueue(path)
+
+        while q.size() > 0:
+
+            current_path = q.dequeue()
+            new_user_id = current_path[-1]
+
+            if new_user_id not in visited:
+                visited[new_user_id] = current_path
+
+                friends = self.get_friendships(new_user_id)
+
+                for friend in friends:
+                    path_copy = list(current_path)
+                    path_copy.append(friend)
+                    q.enqueue(path_copy)
+
         return visited
 
 
